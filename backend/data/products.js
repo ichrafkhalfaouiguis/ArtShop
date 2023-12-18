@@ -1,0 +1,48 @@
+const products = [
+  {
+    name: 'Yulia\'s Artwork',
+    image: '/images/1.jpg',
+    description: 'Unique art piece for sale on RomisArtShop. Add this beautiful artwork to your collection.',
+    brand: 'RomisArts',
+    category: 'Arts',
+    price: 500,
+    countInStock: 10,
+    rating: 4.5,
+    numReviews: 12,
+  },
+  {
+    name: 'Product 2',
+    image: '/images/2.jpg',
+    description: 'Exquisite art for sale on RomisArtShop. Enhance your space with this captivating piece.',
+    brand: 'RomisArts',
+    category: 'Arts',
+    price: 175,
+    countInStock: 7,
+    rating: 2,
+    numReviews: 5,
+  },
+  {
+    name: 'Product 3',
+    image: '/images/3.jpg',
+    description: 'Artwork by RomisArts available for purchase. Discover the beauty of this unique creation.',
+    brand: 'RomisArts',
+    category: 'Arts',
+    price: 200,
+    countInStock: 7,
+    rating: 7,
+    numReviews: 8,
+  },
+  {
+    name: 'Product 4',
+    image: '/images/4.jpg',
+    description: 'Limited edition art piece for sale on RomisArtShop. A must-have for art enthusiasts.',
+    brand: 'RomisArts',
+    category: 'Arts',
+    price: 350,
+    countInStock: 0,
+    rating: 1,
+    numReviews: 15,
+  },
+];
+
+export default products;

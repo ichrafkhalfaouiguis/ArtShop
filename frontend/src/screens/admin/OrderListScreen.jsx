@@ -1,24 +1,12 @@
-import React, { useEffect } from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Table, Button } from 'react-bootstrap';
-import { useGetOrdersQuery, useDeliverOrderMutation } from '../../slices/ordersApiSlice';
-import Loader from '../../components/Loader';
+import { FaTimes } from 'react-icons/fa';
 import Message from '../../components/Message';
+import Loader from '../../components/Loader';
+import { useGetOrdersQuery } from '../../slices/ordersApiSlice';
 
 const OrderListScreen = () => {
-  const { data: orders, refetch, isLoading, error } = useGetOrdersQuery();
-  const [deliverOrder] = useDeliverOrderMutation();
-
-  const deliverHandler = async (orderId) => {
-    if (window.confirm('Are you sure you want to mark this order as delivered?')) {
-      try {
-        await deliverOrder(orderId);
-        refetch();
-      } catch (err) {
-        // Handle the error, e.g., display an error message
-      }
-    }
-  };
+  const { data: orders, isLoading, error } = useGetOrdersQuery();
 
   return (
     <>
@@ -26,9 +14,11 @@ const OrderListScreen = () => {
       {isLoading ? (
         <Loader />
       ) : error ? (
-        <Message variant="danger">{error?.data?.message || error.error}</Message>
+        <Message variant='danger'>
+          {error?.data?.message || error.error}
+        </Message>
       ) : (
-        <Table striped bordered hover responsive className="table-sm">
+        <Table striped bordered hover responsive className='table-sm'>
           <thead>
             <tr>
               <th>ID</th>
@@ -51,28 +41,19 @@ const OrderListScreen = () => {
                   {order.isPaid ? (
                     order.paidAt.substring(0, 10)
                   ) : (
-                    <i className="fas fa-times" style={{ color: 'red' }}></i>
+                    <FaTimes style={{ color: 'red' }} />
                   )}
                 </td>
                 <td>
                   {order.isDelivered ? (
                     order.deliveredAt.substring(0, 10)
                   ) : (
-                    <i className="fas fa-times" style={{ color: 'red' }}></i>
+                    <FaTimes style={{ color: 'red' }} />
                   )}
                 </td>
                 <td>
-                  {!order.isDelivered && (
-                    <Button
-                      variant="light"
-                      className="btn-sm"
-                      onClick={() => deliverHandler(order._id)}
-                    >
-                      Mark as Delivered
-                    </Button>
-                  )}
-                  <LinkContainer to={`/admin/order/${order._id}`}>
-                    <Button variant="info" className="btn-sm">
+                  <LinkContainer to={`/order/${order._id}`}>
+                    <Button variant='light' className='btn-sm'>
                       Details
                     </Button>
                   </LinkContainer>
@@ -86,4 +67,4 @@ const OrderListScreen = () => {
   );
 };
 
-export default OrderListScreen ;
+export default OrderListScreen;

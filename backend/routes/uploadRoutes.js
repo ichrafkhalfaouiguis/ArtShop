@@ -5,12 +5,14 @@ import multer from 'multer';
 const router = express.Router();
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, 'uploads/'));
+  destination(req, file, cb) {
+    cb(null, 'uploads/');
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
+  filename(req, file, cb) {
+    cb(
+      null,
+      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
+    );
   },
 });
 
@@ -24,7 +26,7 @@ function fileFilter(req, file, cb) {
   if (extname && mimetype) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type. Only images (jpeg, png, webp) are allowed.'), false);
+    cb(new Error('Images only!'), false);
   }
 }
 
@@ -37,13 +39,9 @@ router.post('/', (req, res) => {
       return res.status(400).send({ message: err.message });
     }
 
-    if (!req.file) {
-      return res.status(400).send({ message: 'No file uploaded.' });
-    }
-
     res.status(200).send({
       message: 'Image uploaded successfully',
-      imagePath: `/${req.file.path}`,
+      image: `/${req.file.path}`,
     });
   });
 });

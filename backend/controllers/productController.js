@@ -46,6 +46,7 @@ const getProductById = asyncHandler(async (req, res) => {
 // @desc    Create a product
 // @route   POST /api/products
 // @access  Private/Admin
+
 const createProduct = asyncHandler(async (req, res) => {
   const product = new Product({
     name: 'Sample name',
@@ -154,7 +155,21 @@ const getTopProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
+const getProductsByCategory = asyncHandler(async (req, res) => {
+  const category = req.params.category;
+
+  const products = await Product.find({ category: category });
+
+  if (products && products.length > 0) {
+    return res.json(products);
+  } else {
+    res.status(404);
+    throw new Error('Products not found for the given category');
+  }
+});
+
 export {
+  getProductsByCategory,
   getProducts,
   getProductById,
   createProduct,

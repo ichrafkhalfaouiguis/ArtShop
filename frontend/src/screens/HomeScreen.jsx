@@ -18,9 +18,13 @@ const HomeScreen = () => {
   });
 
   return (
+  
     <>
+      <ProductCarousel/>
+    {/** 
       {!keyword ? (
         <ProductCarousel />
+        
       ) : (
         <Link to='/' className='btn btn-light mb-4'>
           Go Back
@@ -33,6 +37,7 @@ const HomeScreen = () => {
           {error?.data?.message || error.error}
         </Message>
       ) : (
+   
         <>
           <Meta/>
           <h1>Latest Products</h1>
@@ -50,7 +55,9 @@ const HomeScreen = () => {
           />
         </>
       )}
+      */}
     </>
+    
   );
 };
 

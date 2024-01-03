@@ -1,41 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Button } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { useGetProductsByCategoryQuery,useGetProductsQuery } from '../slices/productsApiSlice'; // Update with the correct import path
+import React, { useState, useEffect, useRef } from 'react';
+import { Form, Button, ListGroup } from 'react-bootstrap';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useGetProductsQuery } from '../slices/productsApiSlice';
 
 const SearchBox = () => {
   const navigate = useNavigate();
   const { keyword: urlKeyword } = useParams();
-
   const [keyword, setKeyword] = useState(urlKeyword || '');
-
-  // Fetch products based on the keyword
-  const { data: productsData } = useGetProductsQuery({ keyword, pageNumber: 1 });
-
-  // Fetch products based on the category (optional)
-   const { data: categoryProductsData } = useGetProductsByCategoryQuery();
+  const [suggestions, setSuggestions] = useState([]);
+  const { data: productsData } = useGetProductsQuery({ keyword });
+  const suggestionsRef = useRef();
 
   useEffect(() => {
-  
+    if (productsData) {
+      const productNames = productsData.products.map((product) => product.name);
+      setSuggestions(productNames);
+    }
   }, [productsData]);
 
   const submitHandler = (e) => {
     e.preventDefault();
     if (keyword) {
-      navigate(`/search/${keyword.trim()}`);
+      navigate(`/search/${encodeURIComponent(keyword.trim())}/page/1`);
       setKeyword('');
+      setSuggestions([]);
     } else {
       navigate('/');
     }
   };
+
+  const handleInputChange = (e) => {
+    const input = e.target.value;
+    setKeyword(input);
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setKeyword(suggestion);
+    setSuggestions([]);
+    navigate(`/search/${encodeURIComponent(suggestion)}/page/1`);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+        setSuggestions([]);
+      }
+    };
+
+    // Clear the previous search results when clicking outside the suggestions
+    if (suggestions.length > 0) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [suggestions, suggestionsRef]);
 
   return (
     <Form onSubmit={submitHandler} className='d-flex'>
       <Form.Control
         type='text'
         name='q'
-        onChange={(e) => setKeyword(e.target.value)}
+        onChange={handleInputChange}
         value={keyword}
         placeholder='Search Products...'
         className='mr-sm-2 ml-sm-5'
@@ -43,6 +72,30 @@ const SearchBox = () => {
       <Button type='submit' variant='outline-success' className='p-2 mx-2'>
         Search
       </Button>
+
+      {suggestions.length > 0 && (
+        <ListGroup
+          ref={suggestionsRef}
+         
+         
+        >
+          {suggestions.map((suggestion, index) => (
+            <ListGroup.Item
+              key={index}
+              action
+              onClick={() => handleSuggestionClick(suggestion)}
+              style={{
+                cursor: 'pointer',
+                padding: '8px 16px',
+                borderBottom: index < suggestions.length - 1 ? '1px solid #ced4da' : 'none',
+                backgroundColor: '#fff',
+              }}
+            >
+              {suggestion}
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      )}
     </Form>
   );
 };

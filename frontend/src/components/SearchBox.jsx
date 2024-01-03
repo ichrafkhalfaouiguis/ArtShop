@@ -17,8 +17,7 @@ const SearchBox = () => {
    const { data: categoryProductsData } = useGetProductsByCategoryQuery();
 
   useEffect(() => {
-    // You can access the fetched products in the `productsData` variable.
-    console.log(productsData);
+  
   }, [productsData]);
 
   const submitHandler = (e) => {

@@ -20,9 +20,9 @@ const CategoryDropdown = ({ categories, selectedCategory }) => {
   
 
   const dropdownStyle = {
-    color: '#ffffff', // Change this to match your desired text color
-    fontSize: '16px', // Adjust the font size as needed
-    // Add other styles as needed
+    color: '#ffffff', 
+    fontSize: '16px', 
+  
   };
 
   return (

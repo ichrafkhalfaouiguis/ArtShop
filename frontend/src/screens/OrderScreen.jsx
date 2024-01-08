@@ -100,6 +100,10 @@ const OrderScreen = () => {
     await deliverOrder(orderId);
     refetch();
   };
+  const payedHandler = async () => {
+    await payOrder(orderId);
+    refetch();
+  };
 
   return isLoading ? (
     <Loader />
@@ -219,10 +223,10 @@ const OrderScreen = () => {
                     <Loader />
                   ) : (
                     <div>
-                      {/* THIS BUTTON IS FOR TESTING! REMOVE BEFORE PRODUCTION! */}
-                      {/* <Button
+                      {/* THIS BUTTON IS FOR TESTING! REMOVE BEFORE PRODUCTION! 
+                     <Button
                         style={{ marginBottom: '10px' }}
-                        onClick={onApproveTest}
+                        onClick={payedHandler}
                       >
                         Test Pay Order
                       </Button> */}
@@ -243,7 +247,7 @@ const OrderScreen = () => {
 
               {userInfo &&
                 userInfo.isAdmin &&
-                order.isPaid &&
+                //order.isPaid &&
                 !order.isDelivered && (
                   <ListGroup.Item>
                     <Button

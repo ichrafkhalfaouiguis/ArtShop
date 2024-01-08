@@ -49,7 +49,7 @@ const ProductEditScreen = () => {
         category,
         description,
         countInStock,
-      }).unwrap();
+      }).unwrap(); // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success('Product updated');
       refetch();
       navigate('/admin/productlist');
@@ -64,7 +64,7 @@ const ProductEditScreen = () => {
       setPrice(product.price);
       setImage(product.image);
       setBrand(product.brand);
-      setCategory(product.category); // Corrected from setSelectedCategory
+      setCategory(product.category);
       setCountInStock(product.countInStock);
       setDescription(product.description);
     }
@@ -151,22 +151,16 @@ const ProductEditScreen = () => {
                 onChange={(e) => setCountInStock(e.target.value)}
               ></Form.Control>
             </Form.Group>
+
             <Form.Group controlId='category'>
-  <Form.Label>Category</Form.Label>
-  <Form.Control
-    as='select'
-    value={category} 
-    onChange={(e) => setCategory(e.target.value)}
-  >
-    
-    <option >select category</option>
-    <option value='Arts'>Arts</option>
-    <option value='Ceramic'>Ceramic</option>
-    <option value='Formwear'>Formwear</option>
-    <option value='Furniture'>Furniture</option>
-   
-  </Form.Control>
-</Form.Group>
+              <Form.Label>Category</Form.Label>
+              <Form.Control
+                type='text'
+                placeholder='Enter category'
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
 
             <Form.Group controlId='description'>
               <Form.Label>Description</Form.Label>

@@ -2,7 +2,7 @@ import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import { calcPrices } from '../utils/calcPrices.js';
-//import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
+import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -89,11 +89,11 @@ const getOrderById = asyncHandler(async (req, res) => {
 const updateOrderToPaid = asyncHandler(async (req, res) => {
   // NOTE: here we need to verify the payment was made to PayPal before marking
   // the order as paid
-  //const { verified, value } = await verifyPayPalPayment(req.body.id);
-  //if (!verified) throw new Error('Payment not verified');
+  const { verified, value } = await verifyPayPalPayment(req.body.id);
+  if (!verified) throw new Error('Payment not verified');
 
   // check if this transaction has been used before
-  //const isNewTransaction = await checkIfNewTransaction(Order, req.body.id);
+  const isNewTransaction = await checkIfNewTransaction(Order, req.body.id);
   if (!isNewTransaction) throw new Error('Transaction has been used before');
 
   const order = await Order.findById(req.params.id);
@@ -120,7 +120,23 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     throw new Error('Order not found');
   }
 });
+// @route   PUT /api/orders/:id/payondelivery
+// @access  Private/Admin
+const updateOrderToPaidOnDelivery = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
 
+  if (order) {
+    order.isPaid = true;
+    order.paidAt = Date.now();
+
+    const updatedOrder = await order.save();
+
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
 // @desc    Update order to delivered
 // @route   GET /api/orders/:id/deliver
 // @access  Private/Admin
@@ -155,4 +171,5 @@ export {
   updateOrderToPaid,
   updateOrderToDelivered,
   getOrders,
+  updateOrderToPaidOnDelivery
 };

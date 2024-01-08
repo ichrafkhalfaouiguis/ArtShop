@@ -11,6 +11,7 @@ import {
   useGetOrderDetailsQuery,
   useGetPaypalClientIdQuery,
   usePayOrderMutation,
+  useUpdateOrderToPaidOnDeliveryMutation,
 } from '../slices/ordersApiSlice';
 
 const OrderScreen = () => {
@@ -31,6 +32,19 @@ const OrderScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
+
+  const [updateOrderToPaidOnDelivery, { isLoading: loadingUpdateOrder }] =
+  useUpdateOrderToPaidOnDeliveryMutation();
+const payedHandler = async () => {
+  try {
+    await updateOrderToPaidOnDelivery(orderId);
+    refetch();
+    toast.success('Order is marked as paid');
+  } catch (err) {
+    toast.error(err?.data?.message || err.error);
+  }
+};
+
 
   const {
     data: paypal,
@@ -100,10 +114,7 @@ const OrderScreen = () => {
     await deliverOrder(orderId);
     refetch();
   };
-  const payedHandler = async () => {
-    await payOrder(orderId);
-    refetch();
-  };
+ 
 
   return isLoading ? (
     <Loader />
@@ -223,13 +234,7 @@ const OrderScreen = () => {
                     <Loader />
                   ) : (
                     <div>
-                      {/* THIS BUTTON IS FOR TESTING! REMOVE BEFORE PRODUCTION! 
-                     <Button
-                        style={{ marginBottom: '10px' }}
-                        onClick={payedHandler}
-                      >
-                        Test Pay Order
-                      </Button> */}
+                  
 
                       <div>
                         <PayPalButtons
@@ -250,6 +255,13 @@ const OrderScreen = () => {
                 //order.isPaid &&
                 !order.isDelivered && (
                   <ListGroup.Item>
+                       
+                       <Button
+                        style={{ marginBottom: '10px' }}
+                        onClick={payedHandler}
+                      >
+                         Mark Order as Paid
+                      </Button> 
                     <Button
                       type='button'
                       className='btn btn-block'

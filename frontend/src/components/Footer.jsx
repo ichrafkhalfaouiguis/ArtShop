@@ -1,12 +1,12 @@
 import React from 'react';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col} from 'react-bootstrap';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add your logic to handle the form submission (e.g., send a message)
+   
   };
 
   return (

@@ -250,18 +250,47 @@ const payedHandler = async () => {
 
               {loadingDeliver && <Loader />}
 
-              {userInfo &&
-                userInfo.isAdmin &&
-                //order.isPaid &&
-                !order.isDelivered && (
-                  <ListGroup.Item>
-                       
-                       <Button
+
+
+              {!order.isPaid && (
+                <ListGroup.Item>
+                  {loadingPay && <Loader />}
+
+                  {isPending ? (
+                    <Loader />
+                  ) : (
+                    <div>
+                  
+
+                      <div>
+                      <Button
                         style={{ marginBottom: '10px' }}
                         onClick={payedHandler}
                       >
                          Mark Order as Paid
-                      </Button> 
+                    </Button> 
+                       
+                      </div>
+                    </div>
+                  )}
+                </ListGroup.Item>
+              )}
+
+              {loadingDeliver && <Loader />}
+
+                 
+              
+
+
+
+
+
+              {userInfo &&
+                userInfo.isAdmin &&
+                order.isPaid &&
+                !order.isDelivered && (
+                  <ListGroup.Item>
+                    
                     <Button
                       type='button'
                       className='btn btn-block'

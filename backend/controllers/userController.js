@@ -1,6 +1,7 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import generateToken from '../utils/generateToken.js';
 import User from '../models/userModel.js';
+import { sendVerificationEmail } from '../nodemailer.js';
 
 // @desc    Auth user & get token
 // @route   POST /api/users/auth
@@ -10,7 +11,7 @@ const authUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  if (user && (await user.matchPassword(password))) {
+  if (user && (await user.matchPassword(password)) && user.isEmailVerified) {
     generateToken(res, user._id);
 
     res.json({
@@ -25,9 +26,6 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Register a new user
-// @route   POST /api/users
-// @access  Public
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -45,13 +43,21 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    generateToken(res, user._id);
+    // Generate token and send verification email
+    const token = generateToken(user._id);
+    sendVerificationEmail(user.email, token);
+
+    // Set isEmailVerified to true
+    user.isEmailVerified = true;
+    
+    await user.save();
 
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      isEmailVerified: user.isEmailVerified,
     });
   } else {
     res.status(400);

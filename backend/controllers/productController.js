@@ -5,7 +5,7 @@ import Product from '../models/productModel.js';
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = process.env.PAGINATION_LIMIT;
+  const pageSize = 6000;
   const page = Number(req.query.pageNumber) || 1;
 
   const keyword = req.query.keyword
@@ -19,6 +19,7 @@ const getProducts = asyncHandler(async (req, res) => {
 
   const count = await Product.countDocuments({ ...keyword });
   const products = await Product.find({ ...keyword })
+    .sort({ createdAt: -1 }) 
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 
@@ -61,6 +62,7 @@ const createProduct = asyncHandler(async (req, res) => {
   });
 
   const createdProduct = await product.save();
+  
   res.status(201).json(createdProduct);
 });
 

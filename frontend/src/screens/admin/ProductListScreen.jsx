@@ -1,13 +1,12 @@
-// ProductListScreen.js
 
-import React from 'react';
+import React, { useState } from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Table, Button, Row, Col } from 'react-bootstrap';
+import { Table, Button, Row, Col, Form } from 'react-bootstrap';
 import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
-import Paginate from '../../components/Paginate'; // Make sure to adjust the path if needed
+import Paginate from '../../components/Paginate'; 
 import {
   useGetProductsQuery,
   useDeleteProductMutation,
@@ -25,6 +24,11 @@ const ProductListScreen = () => {
   const [deleteProduct, { isLoading: loadingDelete }] =
     useDeleteProductMutation();
 
+  const [createProduct, { isLoading: loadingCreate }] =
+    useCreateProductMutation();
+
+  const [searchQuery, setSearchQuery] = useState('');
+
   const deleteHandler = async (id) => {
     if (window.confirm('Are you sure')) {
       try {
@@ -36,9 +40,6 @@ const ProductListScreen = () => {
     }
   };
 
-  const [createProduct, { isLoading: loadingCreate }] =
-    useCreateProductMutation();
-
   const createProductHandler = async () => {
     if (window.confirm('Are you sure you want to create a new product?')) {
       try {
@@ -49,6 +50,12 @@ const ProductListScreen = () => {
       }
     }
   };
+
+  const filteredProducts = (data && data.products) ? data.products.filter((product) =>
+  product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  product.category.toLowerCase().includes(searchQuery.toLowerCase())
+) : [];
 
   return (
     <>
@@ -62,7 +69,14 @@ const ProductListScreen = () => {
           </Button>
         </Col>
       </Row>
-
+      <Form.Group controlId='search'>
+        <Form.Control
+          type='text'
+          placeholder='Search product'
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </Form.Group>
       {loadingCreate && <Loader />}
       {loadingDelete && <Loader />}
       {isLoading ? (
@@ -84,14 +98,14 @@ const ProductListScreen = () => {
           </tr>
         </thead>
         <tbody>
-          {data.products.map((product) => (
-            <tr key={product._id}>
+        {filteredProducts.map((product) => (
+                <tr key={product._id}>
               <td>{product._id}</td>
               <td>
                 <img
                   src={product.image}
                   alt={product.name}
-                  className='product-logo' // Add the product-logo class
+                  className='product-logo' 
                 />
               </td>
               <td>{product.name}</td>

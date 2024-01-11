@@ -16,11 +16,15 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    isAdmin: {
+   
+     isAdmin: {
       type: Boolean,
       required: true,
       default: false,
     },
+    isEmailVerified: { type: Boolean, default: false },
+  
+    
   },
   {
     timestamps: true,

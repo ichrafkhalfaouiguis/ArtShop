@@ -3,6 +3,8 @@ import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import { calcPrices } from '../utils/calcPrices.js';
 import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
+import { sendOrderConfirmationEmail } from '../nodemailer.js';
+
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -53,7 +55,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
     });
 
     const createdOrder = await order.save();
-
+    await sendOrderConfirmationEmail(createdOrder, req.user.email);
     res.status(201).json(createdOrder);
   }
 });

@@ -31,8 +31,10 @@ import UserListScreen from './screens/admin/UserListScreen';
 import UserEditScreen from './screens/admin/UserEditScreen';
 import CategoryScreen from './screens/CategoryScreen';
 import AboutUsScreen from './screens/AboutUsScreen'
-
+import Activation from './components/Activation';
 import ProductListScreenn from './screens/ProductListScreenn'
+import UpdatePassword from './components/UpdatePassword';
+import Email from './components/Email';
 import store from './store';
 import { Provider } from 'react-redux';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
@@ -49,7 +51,9 @@ const router = createBrowserRouter(
            <Route path='/aboutus' element={<AboutUsScreen />} />
       
       <Route path='category/:category' element={<CategoryScreen />} />
-  
+      <Route path="/verify/:activationCode" element={<Activation />} />
+      <Route path="/updatepsw/:token" element={<UpdatePassword />} />
+      <Route path="/email" element={<Email />} />
 
 
 

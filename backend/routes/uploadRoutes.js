@@ -17,32 +17,35 @@ const storage = multer.diskStorage({
 });
 
 function fileFilter(req, file, cb) {
-  const filetypes = /jpe?g|png|webp/;
-  const mimetypes = /image\/jpe?g|image\/png|image\/webp/;
+  const imageFiletypes = /jpe?g|png|webp/;
+  const videoFiletypes = /mp4|avi|mkv|mov/;
 
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = mimetypes.test(file.mimetype);
+  const extname = path.extname(file.originalname).toLowerCase();
+  const isImage = imageFiletypes.test(extname);
+  const isVideo = videoFiletypes.test(extname);
 
-  if (extname && mimetype) {
+  if (isImage || isVideo) {
     cb(null, true);
   } else {
-    cb(new Error('Images only!'), false);
+    cb(new Error('Images or videos only!'), false);
   }
 }
 
 const upload = multer({ storage, fileFilter });
-const uploadSingleImage = upload.single('image');
 
-router.post('/', (req, res) => {
-  uploadSingleImage(req, res, function (err) {
-    if (err) {
-      return res.status(400).send({ message: err.message });
-    }
+router.post('/', upload.array('files', 10), (req, res) => {
+  if (req.files.length === 0) {
+    return res.status(400).send({ message: 'No files uploaded' });
+  }
 
-    res.status(200).send({
-      message: 'Image uploaded successfully',
-      image: `/${req.file.path}`,
-    });
+  const files = req.files.map((file) => ({
+    path: `/${file.path}`,
+    type: file.mimetype.startsWith('image/') ? 'image' : 'video',
+  }));
+
+  res.status(200).send({
+    message: 'Files uploaded successfully',
+    files: files,
   });
 });
 

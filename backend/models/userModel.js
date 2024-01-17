@@ -22,12 +22,21 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
-    isEmailVerified: { type: Boolean, default: false },
-  
-    
+    isEmailVerified: {
+       type: Boolean,
+        default: false
+       },
+    activationCode: String,
+    resetPasswordOTP: {
+      type: String,
+    },
+    resetPasswordOTPExpire: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
+  
   }
 );
 
@@ -45,7 +54,11 @@ userSchema.pre('save', async function (next) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
-
+// Update user password
+userSchema.methods.updatePassword = async function (newPassword) {
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(newPassword, salt);
+};
 const User = mongoose.model('User', userSchema);
 
 export default User;

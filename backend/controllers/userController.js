@@ -1,7 +1,71 @@
+
 import asyncHandler from '../middleware/asyncHandler.js';
 import generateToken from '../utils/generateToken.js';
 import User from '../models/userModel.js';
-import { sendVerificationEmail } from '../nodemailer.js';
+import { sendVerificationEmail, sendResetEmail } from '../nodemailer.js';
+
+import jwt from 'jsonwebtoken';
+import { promisify } from 'util';
+
+export const initiatePasswordReset = asyncHandler(async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    // Check if the user with the given email exists
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate a unique token using JWT
+    const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1h', // Token expiration time
+    });
+
+    // Store the token in the user document
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; 
+    await user.save();
+
+    // Send the reset email
+    const resetLink = `${process.env.CLIENT_URL}/updatepsw/${resetToken}`;
+    await sendResetEmail(user.email, resetLink);
+
+    return res.json({ message: 'Password reset email sent successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+export const ResetPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+
+  try {
+    // Verify and decode the reset token
+    const decodedToken = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+    // Find the user by the decoded token
+    const user = await User.findById(decodedToken.userId);
+
+    if (!user || user.resetPasswordExpires < Date.now()) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Update the user's password and reset token fields
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    res.json({ message: 'Password reset successful' });
+  } catch (error) {
+    return res.status(400).json({ message: 'Invalid or expired reset token' });
+  }
+});
+
 
 // @desc    Auth user & get token
 // @route   POST /api/users/auth
@@ -26,9 +90,21 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Register a new user
+// @route   POST /api/users
+// @access  Public
 const registerUser = asyncHandler(async (req, res) => {
+  // Generate verification code
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let activationCode = '';
+
+  for (let i = 0; i < 10; i++) {
+    activationCode += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+
   const { name, email, password } = req.body;
 
+  // Check if the user already exists
   const userExists = await User.findOne({ email });
 
   if (userExists) {
@@ -36,34 +112,32 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('User already exists');
   }
 
+  // Create a new user with verification code
   const user = await User.create({
     name,
     email,
     password,
+    activationCode: activationCode,
   });
 
   if (user) {
-    // Generate token and send verification email
-    const token = generateToken(user._id);
-    sendVerificationEmail(user.email, token);
-
-    // Set isEmailVerified to true
-    user.isEmailVerified = true;
-    
-    await user.save();
+    // Generate token and send activation email
+    generateToken(res, user._id);
+    await sendVerificationEmail(user.email, user.activationCode); 
 
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
-      isEmailVerified: user.isEmailVerified,
     });
   } else {
     res.status(400);
     throw new Error('Invalid user data');
   }
 });
+
+
 
 // @desc    Logout user / clear cookie
 // @route   POST /api/users/logout
@@ -94,6 +168,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
+
 
 // @desc    Update user profile
 // @route   PUT /api/users/profile
@@ -187,6 +262,30 @@ const updateUser = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
+const verifyuser = asyncHandler(async (req, res) => {
+  try {
+    const foundUser = await User.findOne({ activationCode: req.params.activationCode });
+
+    if (!foundUser) {
+      return res.status(404).json({
+        message: "False activation code",
+      });
+    }
+
+    foundUser.isEmailVerified = true;
+    await foundUser.save();
+
+    return res.json({
+      message: "Account activated successfully!",
+    });
+  } catch (error) {
+    console.error('Error during activation:', error.message);
+    return res.status(500).json({
+      message: "Error during activation. Please try again.",
+    });
+  }
+});
+
 
 export {
   authUser,
@@ -198,4 +297,13 @@ export {
   deleteUser,
   getUserById,
   updateUser,
+  verifyuser,
+  
+
+
+
+
+
+
+
 };

@@ -40,6 +40,10 @@ const LoginScreen = () => {
       toast.error(err?.data?.message || err.error);
     }
   };
+  const handleForgotPassword = () => {
+
+    navigate('/email');
+  };
 
   return (
     <FormContainer>
@@ -81,6 +85,16 @@ const LoginScreen = () => {
           </Link>
         </Col>
       </Row>
+      
+      <Row className='py-3'>
+        <Col>
+       
+          <Button variant='link' onClick={handleForgotPassword}>
+            Forget your Password!
+          </Button>
+        </Col>
+      </Row>
+
     </FormContainer>
   );
 };

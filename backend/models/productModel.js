@@ -27,9 +27,13 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    image: {
+    images: [{
       type: String,
-      required: true,
+      required: true,}
+    ],
+    video: {
+      type: String,
+      required: false,
     },
     brand: {
       type: String,

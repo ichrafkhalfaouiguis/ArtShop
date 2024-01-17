@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import {
   useGetProductDetailsQuery,
   useUpdateProductMutation,
-  useUploadProductImageMutation,
+  useUploadProductFileMutation,
 } from '../../slices/productsApiSlice';
 
 const ProductEditScreen = () => {
@@ -16,7 +16,8 @@ const ProductEditScreen = () => {
 
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
-  const [image, setImage] = useState('');
+  const [images,  setImages] = useState([]);
+  const [video, setVideo] = useState('');
   const [brand, setBrand] = useState('');
   const [category, setCategory] = useState('');
   const [countInStock, setCountInStock] = useState(0);
@@ -32,8 +33,8 @@ const ProductEditScreen = () => {
   const [updateProduct, { isLoading: loadingUpdate }] =
     useUpdateProductMutation();
 
-  const [uploadProductImage, { isLoading: loadingUpload }] =
-    useUploadProductImageMutation();
+  const [uploadProductFile, { isLoading: loadingUpload }] =
+    useUploadProductFileMutation();
 
   const navigate = useNavigate();
 
@@ -44,7 +45,8 @@ const ProductEditScreen = () => {
         productId,
         name,
         price,
-        image,
+        images,
+        video,
         brand,
         category,
         description,
@@ -62,7 +64,8 @@ const ProductEditScreen = () => {
     if (product) {
       setName(product.name);
       setPrice(product.price);
-      setImage(product.image);
+       setImages(product.images);
+      setVideo(product.video);
       setBrand(product.brand);
       setCategory(product.category); 
       setCountInStock(product.countInStock);
@@ -71,17 +74,24 @@ const ProductEditScreen = () => {
   }, [product]);
 
   const uploadFileHandler = async (e) => {
+    const file = e.target.files[0];
     const formData = new FormData();
-    formData.append('image', e.target.files[0]);
+    formData.append('file', file);
+
     try {
-      const res = await uploadProductImage(formData).unwrap();
+      const res = await uploadProductFile(formData).unwrap();
       toast.success(res.message);
-      setImage(res.image);
+
+      // Determine if the uploaded file is an images or video based on its type
+      if (file.type.startsWith('images')) {
+         setImages(res.file);
+      } else if (file.type.startsWith('video')) {
+        setVideo(res.file);
+      }
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
   };
-
   return (
     <>
       <Link to='/admin/productlist' className='btn btn-light my-3'>
@@ -116,18 +126,29 @@ const ProductEditScreen = () => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId='image'>
-              <Form.Label>Image</Form.Label>
+            <Form.Group controlId='images'>
+              <Form.Label>Images</Form.Label>
               <Form.Control
                 type='text'
-                placeholder='Enter image url'
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
+                placeholder='Enter images url'
+                value={images}
+                onChange={(e) =>  setImages(e.target.value)}
               ></Form.Control>
               <Form.Control
                 label='Choose File'
                 onChange={uploadFileHandler}
                 type='file'
+                multiple
+              ></Form.Control>
+              {loadingUpload && <Loader />}
+            </Form.Group>
+            <Form.Group controlId='video'>
+              <Form.Label>Video</Form.Label>
+              <Form.Control
+                label='Choose Video File'
+                onChange={uploadFileHandler}
+                type='file'
+                accept='video/*'
                 multiple
               ></Form.Control>
               {loadingUpload && <Loader />}

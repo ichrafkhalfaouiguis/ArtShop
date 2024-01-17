@@ -92,7 +92,9 @@ const RegisterScreen = () => {
         </Form.Group>
 
         <Button disabled={isLoading} type='submit' variant='primary'>
+        <Link to={redirect ? `/login?redirect=${redirect}` : '/login'}></Link>
           Register
+         
         </Button>
 
         {isLoading && <Loader />}

@@ -33,7 +33,8 @@ import CategoryScreen from './screens/CategoryScreen';
 import AboutUsScreen from './screens/AboutUsScreen'
 import Activation from './components/Activation';
 import ProductListScreenn from './screens/ProductListScreenn'
-import UpdatePassword from './components/UpdatePassword';
+import UpdatePassword from './screens/UpdatePassword';
+import AboutEditScreen from './screens/admin/AboutEditScreen';
 import Email from './components/Email';
 import store from './store';
 import { Provider } from 'react-redux';
@@ -49,6 +50,7 @@ const router = createBrowserRouter(
           <Route path='/search/:keyword/page/:pageNumber' element={<ProductListScreenn />} />
 
            <Route path='/aboutus' element={<AboutUsScreen />} />
+          
       
       <Route path='category/:category' element={<CategoryScreen />} />
       <Route path="/verify/:activationCode" element={<Activation />} />
@@ -74,6 +76,8 @@ const router = createBrowserRouter(
       <Route path='' element={<AdminRoute />}>
         <Route path='/admin/orderlist' element={<OrderListScreen />} />
         <Route path='/admin/productlist' element={<ProductListScreen />} />
+        <Route path='/admin/about/edit' element={<AboutEditScreen/>} />
+
       
         <Route
           path='/admin/productlist/:pageNumber'

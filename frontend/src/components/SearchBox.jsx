@@ -14,7 +14,7 @@ const SearchBox = () => {
   const { data: productsData } = useGetProductsQuery({ keyword, pageNumber: 1 });
 
   // Fetch products based on the category (optional)
-   //const { data: categoryProductsData } = useGetProductsByCategoryQuery();
+  // const { data: categoryProductsData } = useGetProductsByCategoryQuery();
 
   useEffect(() => {
   

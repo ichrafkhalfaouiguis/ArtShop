@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import {
   useGetProductDetailsQuery,
   useUpdateProductMutation,
-  useUploadProductFileMutation,
+  useUploadProductImageMutation,
 } from '../../slices/productsApiSlice';
 
 const ProductEditScreen = () => {
@@ -16,8 +16,7 @@ const ProductEditScreen = () => {
 
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
-  const [images,  setImages] = useState([]);
-  const [video, setVideo] = useState('');
+  const [image, setImage] = useState('');
   const [brand, setBrand] = useState('');
   const [category, setCategory] = useState('');
   const [countInStock, setCountInStock] = useState(0);
@@ -33,8 +32,8 @@ const ProductEditScreen = () => {
   const [updateProduct, { isLoading: loadingUpdate }] =
     useUpdateProductMutation();
 
-  const [uploadProductFile, { isLoading: loadingUpload }] =
-    useUploadProductFileMutation();
+  const [uploadProductImage, { isLoading: loadingUpload }] =
+    useUploadProductImageMutation();
 
   const navigate = useNavigate();
 
@@ -45,13 +44,12 @@ const ProductEditScreen = () => {
         productId,
         name,
         price,
-        images,
-        video,
+        image,
         brand,
         category,
         description,
         countInStock,
-      }).unwrap();
+      }).unwrap(); // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success('Product updated');
       refetch();
       navigate('/admin/productlist');
@@ -64,34 +62,26 @@ const ProductEditScreen = () => {
     if (product) {
       setName(product.name);
       setPrice(product.price);
-       setImages(product.images);
-      setVideo(product.video);
+      setImage(product.image);
       setBrand(product.brand);
-      setCategory(product.category); 
+      setCategory(product.category);
       setCountInStock(product.countInStock);
       setDescription(product.description);
     }
   }, [product]);
 
   const uploadFileHandler = async (e) => {
-    const file = e.target.files[0];
     const formData = new FormData();
-    formData.append('file', file);
-
+    formData.append('image', e.target.files[0]);
     try {
-      const res = await uploadProductFile(formData).unwrap();
+      const res = await uploadProductImage(formData).unwrap();
       toast.success(res.message);
-
-      // Determine if the uploaded file is an images or video based on its type
-      if (file.type.startsWith('images')) {
-         setImages(res.file);
-      } else if (file.type.startsWith('video')) {
-        setVideo(res.file);
-      }
+      setImage(res.image);
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
   };
+
   return (
     <>
       <Link to='/admin/productlist' className='btn btn-light my-3'>
@@ -126,30 +116,18 @@ const ProductEditScreen = () => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId='images'>
-              <Form.Label>Images</Form.Label>
+            <Form.Group controlId='image'>
+              <Form.Label>Image</Form.Label>
               <Form.Control
                 type='text'
-                placeholder='Enter images url'
-                value={images}
-                onChange={(e) =>  setImages(e.target.value)}
+                placeholder='Enter image url'
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
               ></Form.Control>
               <Form.Control
                 label='Choose File'
                 onChange={uploadFileHandler}
                 type='file'
-                multiple
-              ></Form.Control>
-              {loadingUpload && <Loader />}
-            </Form.Group>
-            <Form.Group controlId='video'>
-              <Form.Label>Video</Form.Label>
-              <Form.Control
-                label='Choose Video File'
-                onChange={uploadFileHandler}
-                type='file'
-                accept='video/*'
-                multiple
               ></Form.Control>
               {loadingUpload && <Loader />}
             </Form.Group>
@@ -173,8 +151,9 @@ const ProductEditScreen = () => {
                 onChange={(e) => setCountInStock(e.target.value)}
               ></Form.Control>
             </Form.Group>
+
             <Form.Group controlId='category'>
-  <Form.Label>Category</Form.Label>
+            <Form.Label>Category</Form.Label>
   <Form.Control
     as='select'
     value={category} 
@@ -188,7 +167,7 @@ const ProductEditScreen = () => {
     <option value='Furniture'>Furniture</option>
    
   </Form.Control>
-</Form.Group>
+            </Form.Group>
 
             <Form.Group controlId='description'>
               <Form.Label>Description</Form.Label>

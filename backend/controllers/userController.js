@@ -20,7 +20,7 @@ export const initiatePasswordReset = asyncHandler(async (req, res, next) => {
 
     // Generate a unique token using JWT
     const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '1h', // Token expiration time
+      expiresIn: '1h',
     });
 
     // Store the token in the user document
@@ -38,33 +38,40 @@ export const initiatePasswordReset = asyncHandler(async (req, res, next) => {
   }
 });
 
-export const ResetPassword = asyncHandler(async (req, res) => {
-  const { token } = req.params;
-  const { newPassword } = req.body;
+
+export const updatePassword = asyncHandler(async (req, res, next) => {
+  const resetToken = req.params.token;
+  const { password } = req.body;
 
   try {
-    // Verify and decode the reset token
-    const decodedToken = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
 
-    // Find the user by the decoded token
-    const user = await User.findById(decodedToken.userId);
-
-    if (!user || user.resetPasswordExpires < Date.now()) {
-      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    // Check if the token is expired
+    if (decoded.exp < Date.now() / 1000) {
+      return res.status(400).json({ message: 'Token has expired' });
     }
 
-    // Update the user's password and reset token fields
-    user.password = newPassword;
+    // Find user by ID in the decoded token
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update user password
+    user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
 
     await user.save();
 
-    res.json({ message: 'Password reset successful' });
+    return res.json({ message: 'Password updated successfully' });
   } catch (error) {
-    return res.status(400).json({ message: 'Invalid or expired reset token' });
+    console.error(error);
+    return res.status(400).json({ message: 'Invalid or expired token' });
   }
 });
+
 
 
 // @desc    Auth user & get token

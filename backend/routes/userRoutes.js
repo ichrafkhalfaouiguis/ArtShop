@@ -11,7 +11,7 @@ import {
   updateUser,
   verifyuser,
   initiatePasswordReset,
-  ResetPassword
+  updatePassword,
 
   
 
@@ -36,8 +36,9 @@ router
 
   router.route('/verifyuser/:activationCode').post(verifyuser);
   router.post('/resetPasswordRequest', initiatePasswordReset);
+  router.post('/resetPassword/:token', updatePassword);
 
-router.route('/resetPassword/:token').post(ResetPassword);
+
 
 
 

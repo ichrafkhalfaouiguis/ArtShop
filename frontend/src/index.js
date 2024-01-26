@@ -35,6 +35,7 @@ import Activation from './components/Activation';
 import ProductListScreenn from './screens/ProductListScreenn'
 import UpdatePassword from './screens/UpdatePassword';
 import AboutEditScreen from './screens/admin/AboutEditScreen';
+import AboutListScreen from './screens/admin/AboutListScreen';
 import Email from './components/Email';
 import store from './store';
 import { Provider } from 'react-redux';
@@ -77,6 +78,8 @@ const router = createBrowserRouter(
         <Route path='/admin/orderlist' element={<OrderListScreen />} />
         <Route path='/admin/productlist' element={<ProductListScreen />} />
         <Route path='/admin/about/edit' element={<AboutEditScreen/>} />
+        <Route path="/about-list" element={<AboutListScreen />} />
+        
 
       
         <Route

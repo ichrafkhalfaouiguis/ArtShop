@@ -16,6 +16,14 @@ const reviewSchema = mongoose.Schema(
   }
 );
 
+const imageSchema = mongoose.Schema({
+  url: { type: String, required: true },
+});
+
+const videoSchema = mongoose.Schema({
+  url: { type: String, required: true },
+});
+
 const productSchema = mongoose.Schema(
   {
     user: {
@@ -27,11 +35,8 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    image: {
-      type: String,
-      required: true,
-    },
-   
+    images: [imageSchema],
+    videos: [videoSchema],
     brand: {
       type: String,
       required: true,
@@ -68,7 +73,6 @@ const productSchema = mongoose.Schema(
   },
   {
     timestamps: true,
-    
   }
 );
 

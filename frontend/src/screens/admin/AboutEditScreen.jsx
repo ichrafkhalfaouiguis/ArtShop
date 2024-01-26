@@ -1,131 +1,114 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Button, Form, Carousel } from 'react-bootstrap';
-import { useGetAboutQuery, useUpdateAboutMutation } from '../../slices/aboutApiSlice';
-import Loader from '../../components/Loader';
-const loadingUpload = false;
+import React, { useState, useEffect } from 'react';
+import { Form, Button } from 'react-bootstrap';
+import axios from 'axios';
+import { BASE_URL } from '../../constants';
+import { useNavigate } from 'react-router-dom';
 
 const AboutEditScreen = () => {
-  const { data: about, error, isLoading } = useGetAboutQuery();
-  const [updateAbout, { isLoading: updatingAbout }] = useUpdateAboutMutation();
-  const [newText, setNewText] = useState('');
-  const [newImage, setNewImage] = useState('');
-  const [newVideo, setNewVideo] = useState('');
-  const [imageFile, setImageFile] = useState(null); // State to store the selected image file
+  const [aboutInfo, setAboutInfo] = useState({
+    images: [],
+    videos: [],
+    text: '',
+  });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the about information on component mount
+    const fetchAboutInfo = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/about`);
+        setAboutInfo(response.data || { images: [], videos: [], text: '' });
+      } catch (error) {
+        console.error('Error fetching about information:', error.message);
+      }
+    };
+
+    fetchAboutInfo();
   }, []);
 
-  const handleUpdateAbout = async () => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAboutInfo((prevAboutInfo) => ({
+      ...prevAboutInfo,
+      [name]: value,
+    }));
+  };
+
+  const handleImageChange = (e) => {
+    const files = e.target.files;
+    setAboutInfo((prevAboutInfo) => ({
+      ...prevAboutInfo,
+      images: [...prevAboutInfo.images, ...files],
+    }));
+  };
+
+  const handleVideoChange = (e) => {
+    const files = e.target.files;
+    setAboutInfo((prevAboutInfo) => ({
+      ...prevAboutInfo,
+      videos: [...prevAboutInfo.videos, ...files],
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('text', aboutInfo.text);
+
+    // Append images to the form data
+    aboutInfo.images.forEach((image) => {
+      formData.append('images', image);
+    });
+
+    // Append videos to the form data
+    aboutInfo.videos.forEach((video) => {
+      formData.append('videos', video);
+    });
+
     try {
-      const formData = new FormData();
-      formData.append('text', newText || about?.text);
-      formData.append('videos', newVideo || about?.videos);
-
-      // If an image file is selected, append it to the form data
-      if (imageFile) {
-        formData.append('images', imageFile);
-      } else {
-        // If no new image file is selected, use the existing image URLs
-        formData.append('images', JSON.stringify(newImage ? [...about?.images, { url: newImage }] : about?.images));
-      }
-
-      await updateAbout({ data: formData });
-      // Optionally, refetch the about information after updating
-      // This depends on whether you want the UI to reflect the updated data immediately
+      await axios.post(`${BASE_URL}/api/about`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      navigate('/aboutus');
     } catch (error) {
-      // Handle error
+      console.error('Error updating about information:', error.message);
     }
   };
 
-  const uploadFileHandler = (e) => {
-    const file = e.target.files[0];
-    setImageFile(file);
-  };
-
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>Error loading about information</p>;
-  }
-
   return (
-    <Container>
-      <Row className='mt-5'>
-        <Col md={6}>
-          {/* Display uploaded images in a carousel */}
-          <Carousel>
-            {about?.images?.map((image, index) => (
-              <Carousel.Item key={index}>
-                <img src={image.url} alt={`About Image ${index + 1}`} />
-              </Carousel.Item>
-            ))}
-          </Carousel>
-          {/* Display uploaded videos */}
-          {about?.videos?.map((video, index) => (
-            <div key={index}>
-              <video controls width="320" height="240">
-                <source src={video.url} type='video/mp4' />
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          ))}
-        </Col>
-        <Col md={6}>
-          <h2>About Romis Artshop</h2>
-          <p>{about?.text}</p>
-          <Form.Group controlId='newText'>
-            <Form.Label>New Text</Form.Label>
-            <Form.Control
-              as='textarea'
-              rows={4}
-              placeholder='Enter new text...'
-              value={newText}
-              onChange={(e) => setNewText(e.target.value)}
-            />
-          </Form.Group>
-          
-       
-          <Form.Group controlId='image'>
-            <Form.Label>Image</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter image url'
-              value={newImage}
-              onChange={(e) => setNewImage(e.target.value)}
-            />
-            <Form.Control
-              label='Choose File'
-              onChange={uploadFileHandler}
-              type='file'
-            />
-            {loadingUpload && <Loader />}
-          </Form.Group>
-           
-          <Form.Group controlId='video'>
-            <Form.Label>Video</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter video url'
-              value={newImage}
-              onChange={(e) => setNewVideo(e.target.value)}
-            />
-            <Form.Control
-              label='Choose File'
-              onChange={uploadFileHandler}
-              type='file'
-            />
-            {loadingUpload && <Loader />}
-          </Form.Group>
+    <div>
+        <h1>Edit About Information</h1>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="text">
+          <Form.Label>About Text</Form.Label>
+          <Form.Control
+            type="text"
+            name="text"
+            value={aboutInfo.text}
+            onChange={handleChange}
+            placeholder="Enter about text"
+          />
+        </Form.Group>
 
-          <Button onClick={handleUpdateAbout} disabled={updatingAbout}>
-            {updatingAbout ? 'Updating...' : 'Update About'}
-          </Button>
-        </Col>
-      </Row>
-    </Container>
+
+        <Form.Group controlId="image">
+          <Form.Label>Upload Image</Form.Label>
+          <Form.Control type="file" multiple onChange={handleImageChange} />
+        </Form.Group>
+
+        <Form.Group controlId="video">
+          <Form.Label>Upload Video</Form.Label>
+          <Form.Control type="file" multiple onChange={handleVideoChange} />
+        </Form.Group>
+
+        <Button type="submit" variant="primary">
+          Update About Information
+        </Button>
+      </Form>
+    </div>
   );
 };
 

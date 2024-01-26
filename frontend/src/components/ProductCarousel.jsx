@@ -11,7 +11,7 @@ const ProductCarousel = () => {
   return (
    
     <>
-       <AboutUsCarousel />
+    
       <div className="row">
         <div className="col-md-6">
           <CategoryCarousel category={categories[0]} />
@@ -32,27 +32,8 @@ const ProductCarousel = () => {
   );
 };
 
-const AboutUsCarousel = () => {
-  const videoUrls = ['v1.mp4', 'video.mp4'];
 
-  return (
-    <Link to="/aboutus" style={{ textDecoration: 'none' }}>
-      <Carousel pause="hover" className="bg-secondary mb-4" style={{ height: '250px' }}>
-        {videoUrls.map((videoUrl, index) => (
-          <Carousel.Item key={index}>
-            <video autoPlay muted playsInline style={{ width: '100%', height: '250px' }}>
-              <source src={videoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            <Carousel.Caption>
-              <h2 className="text-white text-center">About Us</h2>
-            </Carousel.Caption>
-          </Carousel.Item>
-        ))}
-      </Carousel>
-    </Link>
-  );
-};
+
 const CategoryCarousel = ({ category }) => {
   const { data: products, isLoading, error } = useGetProductsByCategoryQuery(category);
 

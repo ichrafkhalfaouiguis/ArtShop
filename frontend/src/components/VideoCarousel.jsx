@@ -13,7 +13,7 @@ const VideoCarousel = () => {
     const fetchVideos = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/about/media`);
-        console.log(response.data);  
+        
         setVideos(response.data.videos || []);
       } catch (error) {
         console.error('Error fetching videos:', error.message);
@@ -35,7 +35,7 @@ const VideoCarousel = () => {
           {videos.map((video, index) => (
   <Carousel.Item key={index}>
     <video autoPlay muted playsInline style={{ width: '100%', height: '250px' }}>
-      <source src={video.url} type="video/mp4" /> {/* Update this line */}
+      <source src={video.url} type="video/mp4" /> 
       Your browser does not support the video tag.
     </video>
     <Carousel.Caption>

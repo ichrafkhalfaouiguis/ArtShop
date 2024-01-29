@@ -23,6 +23,14 @@ const PaymentScreen = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
+
+    // Handle Cash on Delivery logic
+    if (paymentMethod === 'CashOnDelivery') {
+      // Add additional processing logic if needed
+      // For example, you can display a confirmation message to the user
+      // and initiate the order placement
+    }
+
     dispatch(savePaymentMethod(paymentMethod));
     navigate('/placeorder');
   };
@@ -42,11 +50,31 @@ const PaymentScreen = () => {
               id='PayPal'
               name='paymentMethod'
               value='PayPal'
-              checked
+              checked={paymentMethod === 'PayPal'}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            ></Form.Check>
+
+            <Form.Check
+              className='my-2'
+              type='radio'
+              label='Cash on Delivery'
+              id='CashOnDelivery'
+              name='paymentMethod'
+              value='CashOnDelivery'
+              checked={paymentMethod === 'CashOnDelivery'}
               onChange={(e) => setPaymentMethod(e.target.value)}
             ></Form.Check>
           </Col>
         </Form.Group>
+
+        {paymentMethod === 'CashOnDelivery' && (
+          // You can add additional information for COD, if needed
+          // For example, a confirmation message or instructions
+          <div>
+            <p>Cash on Delivery is available for this order.</p>
+            {/* Add any additional information or instructions */}
+          </div>
+        )}
 
         <Button type='submit' variant='primary'>
           Continue

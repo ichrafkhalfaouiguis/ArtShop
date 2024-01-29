@@ -29,7 +29,7 @@ export const initiatePasswordReset = asyncHandler(async (req, res, next) => {
     await user.save();
 
     // Send the reset email
-    const resetLink = `${process.env.CLIENT_URL}/updatepsw/${resetToken}`;
+    const resetLink = `https://romisartsshops.onrender.com/updatepsw/${resetToken}`;
     await sendResetEmail(user.email, resetLink);
 
     return res.json({ message: 'Password reset email sent successfully' });

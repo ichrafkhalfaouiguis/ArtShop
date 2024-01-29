@@ -14,7 +14,7 @@ const AboutUsScreen = () => {
     const fetchAboutInfo = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/about/media`);
-        console.log('About Info Response:', response.data);
+   
         setAboutInfo(response.data || { images: [], videos: [], text: '' });
       } catch (error) {
         console.error('Error fetching about information:', error.message);

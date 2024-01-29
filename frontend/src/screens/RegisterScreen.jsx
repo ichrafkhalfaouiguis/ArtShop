@@ -41,7 +41,10 @@ const RegisterScreen = () => {
       try {
         const res = await register({ name, email, password }).unwrap();
         dispatch(setCredentials({ ...res }));
-        navigate(redirect);
+        toast.success('Registration successful');
+
+       
+        navigate('/login');
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
@@ -92,9 +95,7 @@ const RegisterScreen = () => {
         </Form.Group>
 
         <Button disabled={isLoading} type='submit' variant='primary'>
-        <Link to={redirect ? `/login?redirect=${redirect}` : '/login'}></Link>
           Register
-         
         </Button>
 
         {isLoading && <Loader />}

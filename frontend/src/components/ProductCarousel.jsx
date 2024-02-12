@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Carousel, Image } from 'react-bootstrap';
 import Message from './Message';
 import { useGetProductsByCategoryQuery } from '../slices/productsApiSlice';
-import { useNavigate } from 'react-router-dom';
+
 
 const ProductCarousel = () => {
   const categories = ['Arts', 'Ceramic', 'Fomewear', 'Furniture'];
@@ -49,7 +49,7 @@ const CategoryCarousel = ({ category }) => {
               {/* Update the Link component to navigate to the specific category screen */}
               <Link to={`/category/${category}`} style={{ textDecoration: 'none' }}>
                 <Image
-                  src={product.image}
+                  src={product.images[0].url}
                   alt={product.name}
                   fluid
                   style={{ objectFit: 'cover', width: '100%', height: '200px' }}

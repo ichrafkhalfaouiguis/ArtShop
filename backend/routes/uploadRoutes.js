@@ -1,49 +1,28 @@
-import path from 'path';
+// uploadRoutes.js
+
 import express from 'express';
 import multer from 'multer';
+import path from 'path';
 
 const router = express.Router();
 
 const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, 'uploads/');
+  destination: function (req, file, cb) {
+    const uploadDir = 'uploads'; // Common upload directory for both products and about
+    cb(null, uploadDir);
   },
-  filename(req, file, cb) {
-    cb(
-      null,
-      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
-    );
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
 });
 
-function fileFilter(req, file, cb) {
-  const filetypes = /jpe?g|png|webp/;
-  const mimetypes = /image\/jpe?g|image\/png|image\/webp/;
+const upload = multer({ storage });
 
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = mimetypes.test(file.mimetype);
-
-  if (extname && mimetype) {
-    cb(null, true);
-  } else {
-    cb(new Error('Images only!'), false);
-  }
-}
-
-const upload = multer({ storage, fileFilter });
-const uploadSingleImage = upload.single('image');
-
-router.post('/', (req, res) => {
-  uploadSingleImage(req, res, function (err) {
-    if (err) {
-      return res.status(400).send({ message: err.message });
-    }
-
-    res.status(200).send({
-      message: 'Image uploaded successfully',
-      image: `/${req.file.path}`,
-    });
-  });
+// Route for handling uploads at /upload
+router.post('/', upload.fields([{ name: 'images', maxCount: 5 }, { name: 'videos', maxCount: 5 }]), (req, res) => {
+  // Handle uploads logic here
+  // You can access uploaded files using req.files
+  res.status(200).json({ message: 'Uploads successful', files: req.files });
 });
 
 export default router;

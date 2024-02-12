@@ -1,189 +1,221 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import Message from '../../components/Message';
 import Loader from '../../components/Loader';
 import FormContainer from '../../components/FormContainer';
 import { toast } from 'react-toastify';
-import {
-  useGetProductDetailsQuery,
-  useUpdateProductMutation,
-  useUploadProductImageMutation,
-} from '../../slices/productsApiSlice';
+import axios from 'axios';
+import { BASE_URL } from '../../constants';
 
 const ProductEditScreen = () => {
   const { id: productId } = useParams();
 
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState(0);
-  const [image, setImage] = useState('');
-  const [brand, setBrand] = useState('');
-  const [category, setCategory] = useState('');
-  const [countInStock, setCountInStock] = useState(0);
-  const [description, setDescription] = useState('');
+  const [productInfo, setProductInfo] = useState({
+    name: '',
+    price: 0,
+    brand: '',
+    category: '',
+    countInStock: 0,
+    description: '',
+    images: [],
+    videos: [],
+  });
 
-  const {
-    data: product,
-    isLoading,
-    refetch,
-    error,
-  } = useGetProductDetailsQuery(productId);
-
-  const [updateProduct, { isLoading: loadingUpdate }] =
-    useUpdateProductMutation();
-
-  const [uploadProductImage, { isLoading: loadingUpload }] =
-    useUploadProductImageMutation();
-
-  const navigate = useNavigate();
-
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    try {
-      await updateProduct({
-        productId,
-        name,
-        price,
-        image,
-        brand,
-        category,
-        description,
-        countInStock,
-      }).unwrap(); 
-      toast.success('Product updated');
-      refetch();
-      navigate('/admin/productlist');
-    } catch (err) {
-      toast.error(err?.data?.message || err.error);
-    }
-  };
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState(true);
+  const [errorProduct, setErrorProduct] = useState(null);
 
   useEffect(() => {
-    if (product) {
-      setName(product.name);
-      setPrice(product.price);
-      setImage(product.image);
-      setBrand(product.brand);
-      setCategory(product.category);
-      setCountInStock(product.countInStock);
-      setDescription(product.description);
-    }
-  }, [product]);
+    const fetchProductDetails = async () => {
+      try {
+        const { data } = await axios.get(`${BASE_URL}/api/products/${productId}`);
+        setProductInfo({
+          name: data.name,
+          price: data.price,
+          brand: data.brand,
+          category: data.category,
+          countInStock: data.countInStock,
+          description: data.description,
+          images: data.images || [],
+          videos: data.videos || [],
+        });
+        setLoadingProduct(false);
+      } catch (error) {
+        setErrorProduct(error.response?.data?.message || 'Error fetching product details');
+        setLoadingProduct(false);
+      }
+    };
 
-  const uploadFileHandler = async (e) => {
+    fetchProductDetails();
+  }, [productId]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProductInfo((prevProductInfo) => ({
+      ...prevProductInfo,
+      [name]: value,
+    }));
+  };
+
+  const handleImageChange = (e) => {
+    const files = e.target.files;
+    setProductInfo((prevProductInfo) => ({
+      ...prevProductInfo,
+      images: [...prevProductInfo.images, ...files],
+    }));
+  };
+  
+  const handleVideoChange = (e) => {
+    const files = e.target.files;
+    setProductInfo((prevProductInfo) => ({
+      ...prevProductInfo,
+      videos: [...prevProductInfo.videos, ...files],
+    }));
+  };
+  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     const formData = new FormData();
-    formData.append('image', e.target.files[0]);
+    formData.append('name', productInfo.name);
+    formData.append('price', productInfo.price);
+    formData.append('brand', productInfo.brand);
+    formData.append('category', productInfo.category);
+    formData.append('countInStock', productInfo.countInStock);
+    formData.append('description', productInfo.description);
+
+// Clear existing images and append new ones
+formData.delete('images');
+productInfo.images.forEach((image) => {
+  formData.append('images', image);
+});
+
+// Clear existing videos and append new ones
+formData.delete('videos');
+productInfo.videos.forEach((video) => {
+  formData.append('videos', video);
+});
+
+
     try {
-      const res = await uploadProductImage(formData).unwrap();
-      toast.success(res.message);
-      setImage(res.image);
-    } catch (err) {
-      toast.error(err?.data?.message || err.error);
+      setLoadingUpdate(true);
+      await axios.put(`${BASE_URL}/api/products/${productId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setLoadingUpdate(false);
+      toast.success('Product updated');
+    } catch (error) {
+      setLoadingUpdate(false);
+      toast.error(error?.response?.data?.message || error.message);
     }
   };
 
   return (
     <>
-      <Link to='/admin/productlist' className='btn btn-light my-3'>
+      <Link to='/productlist' className='btn btn-light my-3'>
         Go Back
       </Link>
       <FormContainer>
         <h1>Edit Product</h1>
         {loadingUpdate && <Loader />}
-        {isLoading ? (
+        {loadingProduct ? (
           <Loader />
-        ) : error ? (
-          <Message variant='danger'>{error.data.message}</Message>
+        ) : errorProduct ? (
+          <Message variant='danger'>{errorProduct}</Message>
         ) : (
-          <Form onSubmit={submitHandler}>
+          <Form onSubmit={handleSubmit}>
             <Form.Group controlId='name'>
               <Form.Label>Name</Form.Label>
               <Form.Control
-                type='name'
+                type='text'
+                name='name'
+                value={productInfo.name}
+                onChange={handleChange}
                 placeholder='Enter name'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              ></Form.Control>
+              />
             </Form.Group>
 
             <Form.Group controlId='price'>
               <Form.Label>Price</Form.Label>
               <Form.Control
-                type='number'
+                type='text' 
+                name='price'
+                value={productInfo.price}
+                onChange={handleChange}
                 placeholder='Enter price'
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId='image'>
-              <Form.Label>Image</Form.Label>
-              <Form.Control
-                type='text'
-                placeholder='Enter image url'
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-              ></Form.Control>
-              <Form.Control
-                label='Choose File'
-                onChange={uploadFileHandler}
-                type='file'
-              ></Form.Control>
-              {loadingUpload && <Loader />}
+              />
             </Form.Group>
 
             <Form.Group controlId='brand'>
               <Form.Label>Brand</Form.Label>
               <Form.Control
                 type='text'
+                name='brand'
+                value={productInfo.brand}
+                onChange={handleChange}
                 placeholder='Enter brand'
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-              ></Form.Control>
+              />
             </Form.Group>
 
             <Form.Group controlId='countInStock'>
               <Form.Label>Count In Stock</Form.Label>
               <Form.Control
                 type='number'
+                name='countInStock'
+                value={productInfo.countInStock}
+                onChange={handleChange}
                 placeholder='Enter countInStock'
-                value={countInStock}
-                onChange={(e) => setCountInStock(e.target.value)}
-              ></Form.Control>
+              />
             </Form.Group>
 
             <Form.Group controlId='category'>
-            <Form.Label>Category</Form.Label>
-  <Form.Control
-    as='select'
-    value={category} 
-    onChange={(e) => setCategory(e.target.value)}
-  >
-    
-    <option >select category</option>
-    <option value='Arts'>Arts</option>
-    <option value='Ceramic'>Ceramic</option>
-    <option value='Formwear'>Formwear</option>
-    <option value='Furniture'>Furniture</option>
-   
-  </Form.Control>
+              <Form.Label>Category</Form.Label>
+              <Form.Control
+                as='select'
+                name='category'
+                value={productInfo.category}
+                onChange={handleChange}
+              >
+                <option>select category</option>
+                <option value='Arts'>Arts</option>
+                <option value='Ceramic'>Ceramic</option>
+                <option value='Formwear'>Formwear</option>
+                <option value='Furniture'>Furniture</option>
+              </Form.Control>
             </Form.Group>
 
             <Form.Group controlId='description'>
               <Form.Label>Description</Form.Label>
               <Form.Control
                 type='text'
+                name='description'
+                value={productInfo.description}
+                onChange={handleChange}
                 placeholder='Enter description'
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              ></Form.Control>
+              />
             </Form.Group>
 
-            <Button
-              type='submit'
-              variant='primary'
-              style={{ marginTop: '1rem' }}
-            >
+            {/* Conditionally render image field if there are existing images */}
+            {productInfo.images.length > 0 && (
+              <Form.Group controlId='images'>
+                <Form.Label>Images</Form.Label>
+                <Form.Control type='file' multiple onChange={handleImageChange} />
+              </Form.Group>
+            )}
+
+            {/* Conditionally render video field if there are existing videos */}
+            {productInfo.videos.length > 0 && (
+              <Form.Group controlId='videos'>
+                <Form.Label>Videos</Form.Label>
+                <Form.Control type='file' multiple onChange={handleVideoChange} />
+              </Form.Group>
+            )}
+
+            <Button type='submit' variant='primary' style={{ marginTop: '1rem' }}>
               Update
             </Button>
           </Form>

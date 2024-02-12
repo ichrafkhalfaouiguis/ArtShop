@@ -99,15 +99,19 @@ const ProductListScreen = () => {
         </thead>
         <tbody>
         {filteredProducts.map((product) => (
-                <tr key={product._id}>
-              <td>{product._id}</td>
-              <td>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className='product-logo' 
-                />
-              </td>
+  <tr key={product._id}>
+    <td>{product._id}</td>
+    <td>
+      {product.images && product.images.length > 0 ? (
+        <img
+          src={product.images[0].url}
+          alt={product.name}
+          className='product-logo' 
+        />
+      ) : (
+        <span>No Image</span>
+      )}
+    </td>
               <td>{product.name}</td>
               <td>${product.price}</td>
               <td>{product.category}</td>

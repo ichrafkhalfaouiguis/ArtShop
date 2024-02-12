@@ -1,3 +1,4 @@
+// Product.js
 import mongoose from 'mongoose';
 
 const reviewSchema = mongoose.Schema(
@@ -16,14 +17,6 @@ const reviewSchema = mongoose.Schema(
   }
 );
 
-const imageSchema = mongoose.Schema({
-  url: { type: String, required: true },
-});
-
-const videoSchema = mongoose.Schema({
-  url: { type: String, required: true },
-});
-
 const productSchema = mongoose.Schema(
   {
     user: {
@@ -35,8 +28,12 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    images: [imageSchema],
-    videos: [videoSchema],
+    images: [{
+      url: { type: String, required: true }
+    }],
+    videos: [{
+      url: { type: String, required: true }
+    }],
     brand: {
       type: String,
       required: true,

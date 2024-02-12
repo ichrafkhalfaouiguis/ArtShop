@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ import {
   Card,
   Button,
   Form,
+  Carousel,
 } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import {
@@ -19,24 +20,18 @@ import {
 import Rating from '../components/Rating';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-
+import axios from 'axios';
 import { addToCart } from '../slices/cartSlice';
 import Meta from '../components/Meta';
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
-
-  const addToCartHandler = () => {
-    dispatch(addToCart({ ...product, qty }));
-    navigate('/cart');
-  };
 
   const {
     data: product,
@@ -49,6 +44,11 @@ const ProductScreen = () => {
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
+
+  const addToCartHandler = () => {
+    dispatch(addToCart({ ...product, qty }));
+    navigate('/cart');
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -66,6 +66,15 @@ const ProductScreen = () => {
     }
   };
 
+  // Check if product is undefined
+  if (!product) {
+    return <Loader />; // or any other loading indicator
+  }
+
+  // Combine images and videos into a single array
+  const combinedMedia = [...product.images, ...product.videos];
+
+
   return (
     <>
       <Link className='btn btn-light my-3' to='/'>
@@ -79,11 +88,22 @@ const ProductScreen = () => {
         </Message>
       ) : (
         <>
-           <Meta title={product.name} />
+          <Meta title={product.name} />
           <Row>
+           
             <Col md={6}>
-              <Image src={product.image} alt={product.name} fluid />
+            <Carousel style={{ maxHeight: '400px', overflow: 'hidden' }}>
+  {product.images.map((image, index) => (
+    <Carousel.Item key={index}>
+      <Image src={`/${image.url}`} alt={`Image ${index}`} fluid />
+    </Carousel.Item>
+  ))}
+</Carousel>
+
+
             </Col>
+          
+          
             <Col md={3}>
               <ListGroup variant='flush'>
                 <ListGroup.Item>

@@ -1,7 +1,8 @@
 const products = [
   {
-    name: 'Yulia\'s Artwork',
-    image: '/images/1.jpg',
+    name: "Yulia's Artwork",
+    images: [{ url: '/images/1.jpg' }],
+    videos: [{ url: 'videos-1707402559237.mp4' }],  // Add the video here
     description: 'Unique art piece for sale on RomisArtShop. Add this beautiful artwork to your collection.',
     brand: 'RomisArts',
     category: 'Arts',
@@ -12,7 +13,8 @@ const products = [
   },
   {
     name: 'Product 2',
-    image: '/images/2.jpg',
+    images: [{ url: '/images/2.jpg' }],
+    videos: [{ url: 'videos-1707402559237.mp4' }],  
     description: 'Exquisite art for sale on RomisArtShop. Enhance your space with this captivating piece.',
     brand: 'RomisArts',
     category: 'Ceramic',
@@ -23,7 +25,8 @@ const products = [
   },
   {
     name: 'Product 3',
-    image: '/images/3.jpg',
+    images: [{ url: '/images/3.jpg' }],
+    videos: [{ url: 'videos-1707402559237.mp4' }],  
     description: 'Artwork by RomisArts available for purchase. Discover the beauty of this unique creation.',
     brand: 'RomisArts',
     category: 'Fomewear',
@@ -34,7 +37,8 @@ const products = [
   },
   {
     name: 'Product 4',
-    image: '/images/4.jpg',
+    images: [{ url: '/images/4.jpg' }],
+    videos: [{ url: 'videos-1707402559237.mp4' }], 
     description: 'Limited edition art piece for sale on RomisArtShop. A must-have for art enthusiasts.',
     brand: 'RomisArts',
     category: 'Furniture',

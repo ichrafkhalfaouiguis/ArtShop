@@ -32,7 +32,7 @@ const Header = () => {
     }
   };
 
-  const categories = ['All Categories', 'Arts', 'Ceramic', 'Fomewear', 'Furniture'];
+  const categories = ['All Categories', 'Arts', 'Ceramic', 'Homewear', 'Furniture'];
   const [selectedCategory, setSelectedCategory] = React.useState('All Categories');
 
   const handleCategorySelect = (category) => {

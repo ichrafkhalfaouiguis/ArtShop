@@ -183,7 +183,7 @@ productInfo.videos.forEach((video) => {
                 <option>select category</option>
                 <option value='Arts'>Arts</option>
                 <option value='Ceramic'>Ceramic</option>
-                <option value='Formwear'>Formwear</option>
+                <option value='Homewear'>Homewear</option>
                 <option value='Furniture'>Furniture</option>
               </Form.Control>
             </Form.Group>

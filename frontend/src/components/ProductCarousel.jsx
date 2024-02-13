@@ -6,7 +6,7 @@ import { useGetProductsByCategoryQuery } from '../slices/productsApiSlice';
 
 
 const ProductCarousel = () => {
-  const categories = ['Arts', 'Ceramic', 'Fomewear', 'Furniture'];
+  const categories = ['Arts', 'Ceramic', 'Homewear', 'Furniture'];
 
   return (
    

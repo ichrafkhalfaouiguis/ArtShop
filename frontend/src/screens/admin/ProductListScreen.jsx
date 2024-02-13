@@ -98,7 +98,10 @@ const ProductListScreen = () => {
           </tr>
         </thead>
         <tbody>
-        {filteredProducts.map((product) => (
+        {filteredProducts 
+        .slice()
+        .reverse()
+        .map((product) => (
   <tr key={product._id}>
     <td>{product._id}</td>
     <td>

@@ -10,7 +10,7 @@ import { logout } from '../slices/authSlice';
 import { resetCart } from '../slices/cartSlice';
 import SearchBox from './SearchBox';
 import CategoryDropdown from './CategoryDropdown'; // Import the new component
-import logo from '../assets/logo.jpg';
+import Logo from '../assets/Logo.png'
 
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
@@ -45,10 +45,14 @@ const Header = () => {
       <Navbar bg='primary' variant='dark' expand='lg' collapseOnSelect>
         <Container>
           <LinkContainer to='/'>
-            <Navbar.Brand>
-              <img src={logo} alt='Romisart' style={{ width: '50px', height: '50px' }} />
-              RomisArtsShop
-            </Navbar.Brand>
+          <Navbar.Brand>
+  <img
+    src={Logo}
+    alt='Romisart'
+    style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }}
+    />
+    <span>RomisArtsShop</span>
+</Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'>

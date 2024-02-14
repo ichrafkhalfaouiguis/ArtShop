@@ -18,10 +18,7 @@ import checkObjectId from '../middleware/checkObjectId.js';
 
 
 
-
 const router = express.Router();
-
-
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -48,7 +45,7 @@ router
 
 router.route('/category/:category').get(getProductsByCategory);
 
-router.put('/:id', upload.fields([{ name: 'images', maxCount: 5 }, { name: 'videos', maxCount: 5 }]),protect, admin, checkObjectId, updateProduct);
+router.put('/:id', upload.fields([{ name: 'images', maxCount: 5 }, { name: 'videos', maxCount: 5 }]), protect, admin, updateProduct);
 
 
 

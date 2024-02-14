@@ -21,9 +21,11 @@ import checkObjectId from '../middleware/checkObjectId.js';
 
 const router = express.Router();
 
+
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadDir = file.fieldname === 'images' ? 'uploads' : 'uploads';
+    const uploadDir = file.fieldname === 'images' ? 'uploads/images' : 'uploads/videos';
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {

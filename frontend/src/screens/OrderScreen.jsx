@@ -13,6 +13,7 @@ import {
   usePayOrderMutation,
   useUpdateOrderToPaidOnDeliveryMutation,
 } from '../slices/ordersApiSlice';
+//import Product from '../components/Product';
 
 const OrderScreen = () => {
   const { id: orderId } = useParams();

@@ -20,7 +20,7 @@ import {
 import Rating from '../components/Rating';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import axios from 'axios';
+//import axios from 'axios';
 import { addToCart } from '../slices/cartSlice';
 import Meta from '../components/Meta';
 
@@ -72,7 +72,7 @@ const ProductScreen = () => {
   }
 
   // Combine images and videos into a single array
-  const combinedMedia = [...product.images, ...product.videos];
+ // const combinedMedia = [...product.images, ...product.videos];
 
 
   return (

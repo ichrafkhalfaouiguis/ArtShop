@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import { Table, Button, Image } from 'react-bootstrap';
 import { FaTrash, FaEdit } from 'react-icons/fa';
 import axios from 'axios';
 import { BASE_URL } from '../../constants';
 import { toast } from 'react-toastify';
-import Loader from '../../components/Loader';
+//import Loader from '../../components/Loader';
 import Paginate from '../../components/Paginate';
 
 const AboutListScreen = () => {

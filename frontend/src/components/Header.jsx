@@ -9,8 +9,8 @@ import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
 import { resetCart } from '../slices/cartSlice';
 import SearchBox from './SearchBox';
-import CategoryDropdown from './CategoryDropdown'; // Import the new component
-import Logo from '../assets/Logo.png'
+import CategoryDropdown from './CategoryDropdown'; 
+import Logo from '../assets/logo.png'
 
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
@@ -51,7 +51,7 @@ const Header = () => {
     alt='Romisart'
     style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }}
     />
-    <span>RomisArtsShop</span>
+    <span>IchrafArtsShop</span>
 </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />

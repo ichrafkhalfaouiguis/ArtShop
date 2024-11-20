@@ -1,23 +1,23 @@
-import { Row, Col } from 'react-bootstrap';
+//import { Row, Col } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useGetProductsQuery } from '../slices/productsApiSlice';
-import { Link } from 'react-router-dom';
-import Product from '../components/Product';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import Paginate from '../components/Paginate';
+//import { Link } from 'react-router-dom';
+//import Product from '../components/Product';
+//import Loader from '../components/Loader';
+//import Message from '../components/Message';
+//import Paginate from '../components/Paginate';
 import ProductCarousel from '../components/ProductCarousel';
 import VideoCarousel from '../components/VideoCarousel';
 
-import Meta from '../components/Meta';
+//import Meta from '../components/Meta';
 
 const HomeScreen = () => {
-  const { pageNumber, keyword } = useParams();
+ const { pageNumber, keyword } = useParams();
 
-  const { data, isLoading, error } = useGetProductsQuery({
-    keyword,
-    pageNumber,
-  });
+ const { data, isLoading, error } = useGetProductsQuery({
+   keyword,
+  pageNumber,
+ });
 
   return (
   

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useGetProductsByCategoryQuery,useGetProductsQuery } from '../slices/productsApiSlice'; // Update with the correct import path
+import { useGetProductsQuery } from '../slices/productsApiSlice'; 
 
 const SearchBox = () => {
   const navigate = useNavigate();

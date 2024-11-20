@@ -17,7 +17,7 @@ const Footer = () => {
             <p>Contact: +216 20844564</p>
           </Col>
           <Col md={6} className='text-center'>
-            <p>Email: ichrafkhalfaoui4@gmail.com</p>
+            <p>Email: ichrafkhalfaoui1@gmail.com</p>
           </Col>
         </Row>
         <Row>

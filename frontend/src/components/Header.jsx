@@ -10,7 +10,7 @@ import { logout } from '../slices/authSlice';
 import { resetCart } from '../slices/cartSlice';
 import SearchBox from './SearchBox';
 import CategoryDropdown from './CategoryDropdown'; 
-import Logo from '../assets/logo.png'
+import Logo from '../assets/Logo.png'
 
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
@@ -51,7 +51,7 @@ const Header = () => {
     alt='Romisart'
     style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }}
     />
-    <span>IchrafArtsShop</span>
+    <span>ArtsShop</span>
 </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />

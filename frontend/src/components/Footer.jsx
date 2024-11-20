@@ -23,12 +23,12 @@ const Footer = () => {
         <Row>
           <Col md={12} className='text-center'>
           
-            <p>Location: Your Address, City, Country</p>
+          <p>Location: Kairouan, Tunis 3100</p>
           </Col>
         </Row>
         <Row>
           <Col className='text-center py-3'>
-            <p> IchrafArtsShop &copy; {currentYear} </p>
+            <p> ArtsShop &copy; {currentYear} </p>
           </Col>
         </Row>
       </Container>
